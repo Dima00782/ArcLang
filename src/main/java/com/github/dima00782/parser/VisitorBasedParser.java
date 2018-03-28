@@ -36,12 +36,12 @@ public class VisitorBasedParser implements Parser {
     private static class InstructionVisitor extends ArclangBaseVisitor<Command> {
         @Override
         public Command visitSleepRandomOperator(ArclangParser.SleepRandomOperatorContext ctx) {
-            return null;
+            return new Command(Opcode.SLEEPR, null);
         }
 
         @Override
         public Command visitSleepOperator(ArclangParser.SleepOperatorContext ctx) {
-            return null;
+            return new Command(Opcode.SLEEP, null);
         }
 
         @Override
