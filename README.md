@@ -10,5 +10,5 @@ mvn install
 Run interpreter by
 
 ```bash
-mvn exec:java -Dexec.mainClass="com.github.dima00782.Main" /path/to/your/source.arc
+mvn exec:java -Dexec.mainClass="com.github.dima00782.Main" -Dexec.args="/path/to/your/source.arc"
 ```
