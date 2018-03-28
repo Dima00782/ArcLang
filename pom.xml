@@ -36,8 +36,8 @@
                 <configuration>
                     <compilerVersion>1.7</compilerVersion>
                     <fork>true</fork>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <executable>${maven.compiler.executable}</executable>
                 </configuration>
             </plugin>
@@ -57,7 +57,7 @@
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.3</version>
+                <version>4.7</version>
                 <executions>
                     <execution>
                         <goals>
@@ -65,6 +65,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <listener>false</listener>
+                    <visitor>true</visitor>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

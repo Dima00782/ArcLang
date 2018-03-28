@@ -32,17 +32,18 @@ BR_CLOSE: '}';
 
 prog:                   instList EOF;
 instList:	            (instr)*;
-assignmentoperator:     '=';
-weakassignmentoperator: '~=';
+assignmentoperator:     Identifier '=' (objectOperator | Identifier);
+weakassignmentoperator: Identifier '~=' Identifier;
 objectOperator:         'object';
-threadOperator:         'thread';
+threadOperator:         'thread' BR_OPEN instList BR_CLOSE;
 sleepOperator:          'sleep';
 sleepRandomOperator:    'sleepr';
-dumpOperator:           'dump';
-instr:                  Identifier (assignmentoperator | weakassignmentoperator) (objectOperator | Identifier)
+dumpOperator:           'dump' Identifier;
+instr:                  assignmentoperator
+     |                  weakassignmentoperator
      |	                sleepOperator
      |	                sleepRandomOperator
-     |	                dumpOperator Identifier
-     |                  threadOperator BR_OPEN instList BR_CLOSE
+     |	                dumpOperator
+     |                  threadOperator
      |                  NEWLINE // empty instruction
      ;
