@@ -7,11 +7,26 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
 public class VisitorBasedParser implements Parser {
+    private static final Set<String> reserved;
+
+    static {
+        Set<String> reservedTmp = new HashSet<>();
+        reservedTmp.add("object");
+        reservedTmp.add("sleep");
+        reservedTmp.add("sleepr");
+        reservedTmp.add("dump");
+        reservedTmp.add("thread");
+        reserved = Collections.unmodifiableSet(reservedTmp);
+    }
+
+
     @Override
     public Iterable<Command> parse(CharStream charStream) {
         ArclangLexer lexer = new ArclangLexer(charStream);
@@ -46,12 +61,20 @@ public class VisitorBasedParser implements Parser {
 
         @Override
         public Command visitAssignmentoperator(ArclangParser.AssignmentoperatorContext ctx) {
-            return null;
+            String lhs = ctx.lhs().getText();
+            String rhs = ctx.rhs().getText();
+            if (reserved.contains(lhs) || (reserved.contains(rhs) && !"object".equals(rhs))) {
+                throw new ParserException("using reserved word in assignment " + ctx.lhs());
+            }
+            return new Command(Opcode.DEF_REF, new Object[]{ctx.lhs(), ctx.rhs()});
         }
 
         @Override
         public Command visitWeakassignmentoperator(ArclangParser.WeakassignmentoperatorContext ctx) {
-            return null;
+            if (reserved.contains(ctx.lhs().getText()) || reserved.contains(ctx.rhs().getText())) {
+                throw new ParserException("using reserved word in weak assignment " + ctx.lhs());
+            }
+            return new Command(Opcode.DEF_WREF, new Object[]{ctx.lhs(), ctx.rhs()});
         }
 
         @Override

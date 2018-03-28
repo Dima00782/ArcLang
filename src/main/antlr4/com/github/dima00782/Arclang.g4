@@ -32,9 +32,10 @@ BR_CLOSE: '}';
 
 prog:                   instList EOF;
 instList:	            (instr)*;
-assignmentoperator:     Identifier '=' (objectOperator | Identifier);
-weakassignmentoperator: Identifier '~=' Identifier;
-objectOperator:         'object';
+lhs:                    Identifier;
+rhs:                    Identifier;
+assignmentoperator:     lhs '=' rhs;
+weakassignmentoperator: lhs '~=' rhs;
 threadOperator:         'thread' BR_OPEN instList BR_CLOSE;
 sleepOperator:          'sleep';
 sleepRandomOperator:    'sleepr';
