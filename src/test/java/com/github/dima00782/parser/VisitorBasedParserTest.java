@@ -51,4 +51,16 @@ public class VisitorBasedParserTest {
         assertEquals(1, commands.size());
         assertEquals(Opcode.DUMP, commands.get(0).getOpcode());
     }
+
+    @Test
+    public void testThread() {
+        CharStream charStream = CharStreams.fromString("thread { dump a }");
+        ArrayList<Command> commands = fromIterable(parser.parse(charStream));
+
+        assertEquals(1, commands.size());
+
+        Command threadCom = commands.get(0);
+        assertEquals(Opcode.THREAD, threadCom.getOpcode());
+        assertEquals(1, threadCom.argsSize());
+    }
 }

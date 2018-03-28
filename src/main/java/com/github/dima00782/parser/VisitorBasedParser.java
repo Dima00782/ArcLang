@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.TokenStream;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -79,7 +80,10 @@ public class VisitorBasedParser implements Parser {
 
         @Override
         public Command visitThreadOperator(ArclangParser.ThreadOperatorContext ctx) {
-            return null;
+            final InstructionVisitor instructionVisitor = new InstructionVisitor();
+            return new Command(Opcode.THREAD, ctx.instList().instr()
+                    .stream()
+                    .map(instr -> instr.accept(instructionVisitor)).toArray());
         }
 
         @Override

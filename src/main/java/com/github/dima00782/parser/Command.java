@@ -13,6 +13,10 @@ public final class Command {
         return opcode;
     }
 
+    public int argsSize() {
+        return args.length;
+    }
+
     public Object getArg(int idx) {
         return args[idx];
     }
