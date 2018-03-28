@@ -42,4 +42,13 @@ public class VisitorBasedParserTest {
         assertEquals(1, commands.size());
         assertEquals(Opcode.SLEEP, commands.get(0).getOpcode());
     }
+
+    @Test
+    public void testDump() {
+        CharStream charStream = CharStreams.fromString("dump a");
+        ArrayList<Command> commands = fromIterable(parser.parse(charStream));
+
+        assertEquals(1, commands.size());
+        assertEquals(Opcode.DUMP, commands.get(0).getOpcode());
+    }
 }

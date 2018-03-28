@@ -84,7 +84,10 @@ public class VisitorBasedParser implements Parser {
 
         @Override
         public Command visitDumpOperator(ArclangParser.DumpOperatorContext ctx) {
-            return null;
+            if (reserved.contains(ctx.Identifier().getText())) {
+                throw new ParserException("using dump with reserved words " + ctx.Identifier());
+            }
+            return new Command(Opcode.DUMP, new Object[]{ctx.Identifier().getText()});
         }
     }
 }
