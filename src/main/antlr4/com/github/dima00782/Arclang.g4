@@ -10,13 +10,15 @@ fragment Universalcharactername : '\\u' Hexquad
 	                            | '\\U' Hexquad Hexquad;
 fragment Identifiernondigit : NONDIGIT
                             | Universalcharactername;
+fragment SimpleIdentifier: Identifiernondigit(Identifiernondigit | DIGIT)*;
 
 /*
     Identifiernondigit
 	| Identifier Identifiernondigit
 	| Identifier DIGIT
 */
-Identifier: Identifiernondigit(Identifiernondigit | DIGIT)*;
+
+Identifier: SimpleIdentifier ('.' SimpleIdentifier)*;
 
 BlockComment: '/*' .*? '*/' -> skip;
 LineComment: '//' ~[\r\n]* -> skip;

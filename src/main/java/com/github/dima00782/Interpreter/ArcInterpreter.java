@@ -15,11 +15,11 @@ public class ArcInterpreter implements Interpreter {
         for (Command command : commands) {
             switch (command.getOpcode()) {
                 case DEF_REF: {
-                    System.out.println("DEF_REF");
+                    System.out.println("DEF_REF " + command.getArg(0) + " " + command.getArg(1));
                     break;
                 }
                 case DEF_WREF: {
-                    System.out.println("DEF_WREF");
+                    System.out.println("DEF_WREF " + command.getArg(0) + " " + command.getArg(1));
                     break;
                 }
                 case THREAD: {
