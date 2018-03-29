@@ -5,6 +5,7 @@ import javafx.util.Pair;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 public class ArcInterpreter implements Interpreter {
     private static final int SLEEP_INTERVAL = 100;
@@ -55,6 +56,17 @@ public class ArcInterpreter implements Interpreter {
                 }
                 case DEF_WREF: {
                     System.out.println("DEF_WREF " + command.getArg(0) + " " + command.getArg(1));
+                    break;
+                }
+                case DEREF: {
+                    System.out.print("DEREF ");
+                    String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
+                    IntStream.range(0, command.argsSize()).mapToObj(i -> names[i] + " ").forEach(System.out::print);
+                    System.out.println();
+
+                    for (int i = 0; i < command.argsSize(); ++i) {
+                        scopeObject.removeField(names[i]);
+                    }
                     break;
                 }
                 case THREAD: {

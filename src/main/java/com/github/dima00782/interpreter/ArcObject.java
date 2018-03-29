@@ -15,6 +15,10 @@ public class ArcObject {
         fields.put(fieldName, value);
     }
 
+    public void removeField(String name) {
+        fields.remove(name);
+    }
+
     public void incrementRefCount() {
         refCount.incrementAndGet();
     }

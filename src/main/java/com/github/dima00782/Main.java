@@ -4,6 +4,8 @@ import com.github.dima00782.interpreter.ArcInterpreter;
 import com.github.dima00782.interpreter.Interpreter;
 import com.github.dima00782.parser.Parser;
 import com.github.dima00782.parser.VisitorBasedParser;
+import com.github.dima00782.passes.LiveRangeSetter;
+import com.github.dima00782.passes.Pass;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
@@ -14,6 +16,7 @@ public class Main {
         CharStream charStream = CharStreams.fromFileName(args[0]);
         Parser parser = new VisitorBasedParser();
         Interpreter interpreter = new ArcInterpreter();
-        interpreter.run(parser.parse(charStream));
+        Pass liveRangeSetter = new LiveRangeSetter();
+        interpreter.run(liveRangeSetter.run(parser.parse(charStream)));
     }
 }

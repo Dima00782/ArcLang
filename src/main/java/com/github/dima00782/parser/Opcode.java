@@ -6,5 +6,6 @@ public enum Opcode {
     THREAD,
     SLEEP,
     SLEEPR,
-    DUMP
+    DUMP,
+    DEREF
 }
