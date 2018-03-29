@@ -1,5 +1,7 @@
 package com.github.dima00782.parser;
 
+import java.util.Arrays;
+
 public final class Command {
     private final Opcode opcode;
     private final Object[] args;
@@ -23,5 +25,13 @@ public final class Command {
 
     public Object getArg(int idx) {
         return args[idx];
+    }
+
+    @Override
+    public String toString() {
+        return "Command{" +
+                "opcode=" + opcode +
+                ", args=" + Arrays.toString(args) +
+                '}';
     }
 }

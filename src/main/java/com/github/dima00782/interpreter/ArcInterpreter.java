@@ -81,6 +81,15 @@ public class ArcInterpreter implements Interpreter {
                     });
                     break;
                 }
+                case CAPTURE: {
+                    System.out.print("CAPTURE ");
+                    String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
+                    IntStream.range(0, command.argsSize()).mapToObj(i -> names[i] + " ").forEach(System.out::print);
+                    System.out.println();
+
+                    IntStream.range(0, command.argsSize()).forEach(i -> scopeObject.getField(names[i]).incrementRefCount());
+                    break;
+                }
                 case THREAD: {
                     System.out.println("THREAD");
                     Command[] threadCommands = Arrays.copyOf(command.getArgs(), command.argsSize(), Command[].class);

@@ -40,6 +40,6 @@ public class ArcObject {
     }
 
     public int decrement(String name) {
-        return refCount.decrementAndGet();
+        return fields.get(name).refCount.decrementAndGet();
     }
 }
