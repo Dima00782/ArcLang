@@ -17,6 +17,10 @@ public final class Command {
         return args.length;
     }
 
+    public Object[] getArgs() {
+        return args;
+    }
+
     public Object getArg(int idx) {
         return args[idx];
     }

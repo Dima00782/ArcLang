@@ -2,6 +2,8 @@ package com.github.dima00782.Interpreter;
 
 import com.github.dima00782.parser.Command;
 
+import java.util.Arrays;
+
 public class ArcInterpreter implements Interpreter {
     @Override
     public void run(Iterable<Command> commands) {
@@ -20,6 +22,9 @@ public class ArcInterpreter implements Interpreter {
                 }
                 case THREAD: {
                     System.out.println("THREAD");
+                    Command[] threadCommands = Arrays.copyOf(command.getArgs(), command.argsSize(), Command[].class);
+                    Thread thread = new Thread(() -> ArcInterpreter.this.run(Arrays.asList(threadCommands)));
+                    thread.start();
                     break;
                 }
                 case SLEEP: {
