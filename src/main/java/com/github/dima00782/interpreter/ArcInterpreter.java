@@ -64,9 +64,12 @@ public class ArcInterpreter implements Interpreter {
                     IntStream.range(0, command.argsSize()).mapToObj(i -> names[i] + " ").forEach(System.out::print);
                     System.out.println();
 
-                    for (int i = 0; i < command.argsSize(); ++i) {
-                        scopeObject.removeField(names[i]);
-                    }
+                    IntStream.range(0, command.argsSize()).forEach(i -> {
+                        int refCount = scopeObject.decrement(names[i]);
+                        if (refCount == 0) {
+                            scopeObject.removeField(names[i]);
+                        }
+                    });
                     break;
                 }
                 case THREAD: {
