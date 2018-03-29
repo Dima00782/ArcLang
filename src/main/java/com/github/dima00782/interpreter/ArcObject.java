@@ -1,4 +1,4 @@
-package com.github.dima00782.Interpreter;
+package com.github.dima00782.interpreter;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;

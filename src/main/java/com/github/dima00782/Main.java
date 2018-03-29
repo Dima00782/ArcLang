@@ -1,7 +1,7 @@
 package com.github.dima00782;
 
-import com.github.dima00782.Interpreter.ArcInterpreter;
-import com.github.dima00782.Interpreter.Interpreter;
+import com.github.dima00782.interpreter.ArcInterpreter;
+import com.github.dima00782.interpreter.Interpreter;
 import com.github.dima00782.parser.Parser;
 import com.github.dima00782.parser.VisitorBasedParser;
 import org.antlr.v4.runtime.CharStream;
