@@ -9,7 +9,6 @@ import org.antlr.v4.runtime.TokenStream;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -67,15 +66,17 @@ public class VisitorBasedParser implements Parser {
             if (reserved.contains(lhs) || (reserved.contains(rhs) && !"object".equals(rhs))) {
                 throw new ParserException("using reserved word in assignment " + ctx.lhs());
             }
-            return new Command(Opcode.DEF_REF, new Object[]{ctx.lhs(), ctx.rhs()});
+            return new Command(Opcode.DEF_REF, new Object[]{lhs, rhs});
         }
 
         @Override
         public Command visitWeakassignmentoperator(ArclangParser.WeakassignmentoperatorContext ctx) {
-            if (reserved.contains(ctx.lhs().getText()) || reserved.contains(ctx.rhs().getText())) {
+            String lhs = ctx.lhs().getText();
+            String rhs = ctx.rhs().getText();
+            if (reserved.contains(lhs) || reserved.contains(rhs)) {
                 throw new ParserException("using reserved word in weak assignment " + ctx.lhs());
             }
-            return new Command(Opcode.DEF_WREF, new Object[]{ctx.lhs(), ctx.rhs()});
+            return new Command(Opcode.DEF_WREF, new Object[]{lhs, rhs});
         }
 
         @Override
