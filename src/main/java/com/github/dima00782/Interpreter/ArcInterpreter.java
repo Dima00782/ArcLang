@@ -1,6 +1,7 @@
 package com.github.dima00782.Interpreter;
 
 import com.github.dima00782.parser.Command;
+import javafx.util.Pair;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -10,12 +11,46 @@ public class ArcInterpreter implements Interpreter {
     private static final int SLEEPR_RANGE_START = 10;
     private static final int SLEEPR_RANGE_END = 100;
 
+    private final ArcObject scopeObject = new ArcObject();
+
+    private Pair<String, ArcObject> lookupObjectByName(String name) {
+        String[] fields = name.split("\\.");
+        ArcObject object = scopeObject;
+        for (int i = 0; i + 1 < fields.length; ++i) {
+            object = object.getField(fields[i]);
+        }
+
+        return new Pair<>(fields[fields.length - 1], object);
+    }
+
     @Override
     public void run(Iterable<Command> commands) {
         for (Command command : commands) {
             switch (command.getOpcode()) {
                 case DEF_REF: {
                     System.out.println("DEF_REF " + command.getArg(0) + " " + command.getArg(1));
+
+                    String lhs = (String) command.getArg(0);
+                    String rhs = (String) command.getArg(1);
+
+                    if ("object".equals(rhs)) {
+                        Pair<String, ArcObject> result = lookupObjectByName(lhs);
+                        lhs = result.getKey();
+                        ArcObject objectToInsert = result.getValue();
+                        objectToInsert.addFiled(lhs, new ArcObject());
+                    } else {
+                        Pair<String, ArcObject> lhsSearchResult = lookupObjectByName(lhs);
+                        lhs = lhsSearchResult.getKey();
+                        ArcObject objectToInsert = lhsSearchResult.getValue();
+
+                        Pair<String, ArcObject> rhsSearchResult = lookupObjectByName(rhs);
+                        ArcObject rhsObject = rhsSearchResult.getValue();
+                        rhs = rhsSearchResult.getKey();
+                        ArcObject targetObject = rhsObject.getField(rhs);
+
+                        targetObject.incrementRefCount();
+                        objectToInsert.addFiled(lhs, targetObject);
+                    }
                     break;
                 }
                 case DEF_WREF: {
@@ -49,7 +84,15 @@ public class ArcInterpreter implements Interpreter {
                     break;
                 }
                 case DUMP: {
-                    System.out.println("DUMP");
+                    System.out.print("DUMP " + command.getArg(0) + " ");
+                    String lhs = (String) command.getArg(0);
+                    if ("all".equals(lhs)) {
+                        System.out.println(scopeObject);
+                    } else {
+                        Pair<String, ArcObject> result = lookupObjectByName(lhs);
+                        lhs = result.getKey();
+                        System.out.println(result.getValue().getField(lhs));
+                    }
                     break;
                 }
             }
