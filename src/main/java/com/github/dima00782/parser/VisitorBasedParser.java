@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.TokenStream;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -44,6 +45,7 @@ public class VisitorBasedParser implements Parser {
             return ctx.instList().instr()
                     .stream()
                     .map(instr -> instr.accept(instructionVisitor))
+                    .filter(Objects::nonNull)
                     .collect(toList());
         }
     }
@@ -84,7 +86,9 @@ public class VisitorBasedParser implements Parser {
             final InstructionVisitor instructionVisitor = new InstructionVisitor();
             return new Command(Opcode.THREAD, ctx.instList().instr()
                     .stream()
-                    .map(instr -> instr.accept(instructionVisitor)).toArray());
+                    .map(instr -> instr.accept(instructionVisitor))
+                    .filter(Objects::nonNull)
+                    .toArray());
         }
 
         @Override

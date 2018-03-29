@@ -13,9 +13,6 @@ public class ArcInterpreter implements Interpreter {
     @Override
     public void run(Iterable<Command> commands) {
         for (Command command : commands) {
-            if (command == null) {
-                continue;
-            }
             switch (command.getOpcode()) {
                 case DEF_REF: {
                     System.out.println("DEF_REF");
