@@ -6,12 +6,19 @@ import javafx.util.Pair;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 public class ArcInterpreter implements Interpreter {
     private static final int SLEEP_INTERVAL = 100;
     private static final int SLEEPR_RANGE_START = 10;
     private static final int SLEEPR_RANGE_END = 100;
+    private static final Logger LOGGER = Logger.getLogger(ArcInterpreter.class.getName());
+
+    static {
+        LOGGER.setLevel(Level.WARNING);
+    }
 
     private final ArcObject scopeObject = new ArcObject();
 
@@ -34,7 +41,7 @@ public class ArcInterpreter implements Interpreter {
     }
 
     private void handleAssignment(String lhs, String rhs, boolean isWeak) {
-        System.out.println((!isWeak ? "DEF_REF " : "DEF_WREF ") + lhs + " " + rhs);
+        LOGGER.info((!isWeak ? "DEF_REF " : "DEF_WREF ") + lhs + " " + rhs);
         Pair<String, ArcObject> lhsSearchResult = lookupObjectByName(lhs);
         if ("object".equals(rhs) && !isWeak) {
             lhs = lhsSearchResult.getKey();
@@ -68,10 +75,10 @@ public class ArcInterpreter implements Interpreter {
                     break;
                 }
                 case DEREF: {
-                    System.out.print("DEREF ");
+                    LOGGER.info("DEREF ");
                     String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
-                    IntStream.range(0, command.argsSize()).mapToObj(i -> names[i] + " ").forEach(System.out::print);
-                    System.out.println();
+                    int bound = command.argsSize();
+                    IntStream.range(0, bound).mapToObj(i1 -> names[i1] + " ").forEach(s -> LOGGER.info((s)));
 
                     IntStream.range(0, command.argsSize()).forEach(i -> {
                         int refCount = scopeObject.decrement(names[i]);
@@ -82,34 +89,32 @@ public class ArcInterpreter implements Interpreter {
                     break;
                 }
                 case CAPTURE: {
-                    System.out.print("CAPTURE ");
+                    LOGGER.info("CAPTURE ");
                     String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
-                    IntStream.range(0, command.argsSize()).mapToObj(i -> names[i] + " ").forEach(System.out::print);
-                    System.out.println();
-
+                    IntStream.range(0, command.argsSize()).mapToObj(i -> names[i] + " ").forEach(s -> LOGGER.info((s)));
                     IntStream.range(0, command.argsSize()).forEach(i -> scopeObject.getField(names[i]).incrementRefCount());
                     break;
                 }
                 case THREAD: {
-                    System.out.println("THREAD");
+                    LOGGER.info("THREAD");
                     Command[] threadCommands = Arrays.copyOf(command.getArgs(), command.argsSize(), Command[].class);
                     Thread thread = new Thread(() -> ArcInterpreter.this.run(Arrays.asList(threadCommands)));
                     thread.start();
                     break;
                 }
                 case SLEEP: {
-                    System.out.println("SLEEP");
+                    LOGGER.info("SLEEP");
                     sleep(SLEEP_INTERVAL);
                     break;
                 }
                 case SLEEPR: {
-                    System.out.println("SLEEPR");
+                    LOGGER.info("SLEEPR");
                     int sleepTime = ThreadLocalRandom.current().nextInt(SLEEPR_RANGE_START, SLEEPR_RANGE_END);
                     sleep(sleepTime);
                     break;
                 }
                 case DUMP: {
-                    System.out.print("DUMP " + command.getArg(0) + " ");
+                    LOGGER.info("DUMP " + command.getArg(0) + " ");
                     String lhs = (String) command.getArg(0);
                     if ("all".equals(lhs)) {
                         System.out.println(scopeObject);
