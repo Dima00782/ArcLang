@@ -16,6 +16,9 @@ public final class Command {
     }
 
     public int argsSize() {
+        if (args == null) {
+            return 0;
+        }
         return args.length;
     }
 
