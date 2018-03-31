@@ -3,22 +3,17 @@ package com.github.dima00782.interpreter;
 import com.github.dima00782.parser.Command;
 import com.github.dima00782.parser.Opcode;
 import javafx.util.Pair;
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 public class ArcInterpreter implements Interpreter {
     private static final int SLEEP_INTERVAL = 100;
     private static final int SLEEPR_RANGE_START = 10;
     private static final int SLEEPR_RANGE_END = 100;
-    private static final Logger LOGGER = Logger.getLogger(ArcInterpreter.class.getName());
-
-    static {
-        LOGGER.setLevel(Level.WARNING);
-    }
+    private static final Logger LOGGER = Logger.getLogger(ArcInterpreter.class);
 
     private final ArcObject scopeObject = new ArcObject();
 
@@ -75,10 +70,8 @@ public class ArcInterpreter implements Interpreter {
                     break;
                 }
                 case DEREF: {
-                    LOGGER.info("DEREF ");
                     String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
-                    int bound = command.argsSize();
-                    IntStream.range(0, bound).mapToObj(i1 -> names[i1] + " ").forEach(s -> LOGGER.info((s)));
+                    LOGGER.info("DEREF " + String.join(",", names));
 
                     IntStream.range(0, command.argsSize()).forEach(i -> {
                         int refCount = scopeObject.decrement(names[i]);
@@ -89,9 +82,8 @@ public class ArcInterpreter implements Interpreter {
                     break;
                 }
                 case CAPTURE: {
-                    LOGGER.info("CAPTURE ");
                     String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
-                    IntStream.range(0, command.argsSize()).mapToObj(i -> names[i] + " ").forEach(s -> LOGGER.info((s)));
+                    LOGGER.info("CAPTURE " + String.join(",", names));
                     IntStream.range(0, command.argsSize()).forEach(i -> scopeObject.getField(names[i]).incrementRefCount());
                     break;
                 }
@@ -114,7 +106,7 @@ public class ArcInterpreter implements Interpreter {
                     break;
                 }
                 case DUMP: {
-                    LOGGER.info("DUMP " + command.getArg(0) + " ");
+                    LOGGER.info("DUMP " + command.getArg(0));
                     String lhs = (String) command.getArg(0);
                     if ("all".equals(lhs)) {
                         System.out.println(scopeObject);
