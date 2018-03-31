@@ -1,7 +1,9 @@
 package com.github.dima00782;
 
 import com.github.dima00782.interpreter.ArcInterpreter;
+import com.github.dima00782.interpreter.Dumper;
 import com.github.dima00782.interpreter.Interpreter;
+import com.github.dima00782.parser.Command;
 import com.github.dima00782.parser.Parser;
 import com.github.dima00782.parser.VisitorBasedParser;
 import com.github.dima00782.passes.LiveRangeSetter;
@@ -17,6 +19,13 @@ public class Main {
         Parser parser = new VisitorBasedParser();
         Interpreter interpreter = new ArcInterpreter();
         Pass liveRangeSetter = new LiveRangeSetter();
-        interpreter.run(liveRangeSetter.run(parser.parse(charStream)));
+
+        Iterable<Command> commands = liveRangeSetter.run(parser.parse(charStream));
+        interpreter.run(commands, new Dumper() {
+            @Override
+            public synchronized void dump(String string) {
+                System.out.println(string);
+            }
+        });
     }
 }

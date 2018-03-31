@@ -59,7 +59,7 @@ public class ArcInterpreter implements Interpreter {
     }
 
     @Override
-    public void run(Iterable<Command> commands) {
+    public void run(Iterable<Command> commands, Dumper dumper) {
         for (Command command : commands) {
             switch (command.getOpcode()) {
                 case DEF_REF:
@@ -90,7 +90,7 @@ public class ArcInterpreter implements Interpreter {
                 case THREAD: {
                     LOGGER.info("THREAD");
                     Command[] threadCommands = Arrays.copyOf(command.getArgs(), command.argsSize(), Command[].class);
-                    Thread thread = new Thread(() -> ArcInterpreter.this.run(Arrays.asList(threadCommands)));
+                    Thread thread = new Thread(() -> ArcInterpreter.this.run(Arrays.asList(threadCommands), dumper));
                     thread.start();
                     break;
                 }
@@ -109,11 +109,11 @@ public class ArcInterpreter implements Interpreter {
                     LOGGER.info("DUMP " + command.getArg(0));
                     String lhs = (String) command.getArg(0);
                     if ("all".equals(lhs)) {
-                        System.out.println(scopeObject);
+                        dumper.dump(scopeObject.toString());
                     } else {
                         Pair<String, ArcObject> result = lookupObjectByName(lhs);
                         lhs = result.getKey();
-                        System.out.println(result.getValue().getField(lhs));
+                        dumper.dump(result.getValue().getField(lhs).toString());
                     }
                     break;
                 }
