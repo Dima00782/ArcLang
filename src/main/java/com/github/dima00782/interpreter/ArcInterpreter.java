@@ -113,7 +113,12 @@ public class ArcInterpreter implements Interpreter {
                     } else {
                         Pair<String, ArcObject> result = lookupObjectByName(lhs);
                         lhs = result.getKey();
-                        dumper.dump(result.getValue().getField(lhs).toString());
+                        ArcObject target = result.getValue().getField(lhs);
+                        if (target == null) {
+                            dumper.dump("null");
+                        } else {
+                            dumper.dump(target.toString());
+                        }
                     }
                     break;
                 }
