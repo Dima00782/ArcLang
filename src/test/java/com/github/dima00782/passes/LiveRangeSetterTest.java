@@ -41,7 +41,8 @@ public class LiveRangeSetterTest {
                 new Command(Opcode.THREAD, new Object[] {
                         new Command(Opcode.DEF_WREF, new Object[] {"b", "a"}),
                         new Command(Opcode.DEREF, new Object[] {"a"}),
-                })
+                }),
+                new Command(Opcode.DEREF, new Object[] {"a"})
         ));
 
         assertEquals(expected, runPass(commands));

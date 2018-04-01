@@ -10,10 +10,9 @@ public class LiveRangeSetter implements Pass {
         return name.split("\\.")[0];
     }
 
-    private Command handleThreadCommand(Command thread) {
-        Command[] threadCommands = Arrays.copyOf(thread.getArgs(), thread.argsSize(), Command[].class);
+    private Set<String> getUseSet(Command[] commands) {
         Set<String> useSet = new HashSet<>();
-        Arrays.stream(threadCommands).forEach(current -> {
+        Arrays.stream(commands).forEach(current -> {
             if (current.getOpcode() == Opcode.DEF_REF) {
                 String lhs = first((String) current.getArg(0));
                 String rhs = first((String) current.getArg(1));
@@ -27,33 +26,10 @@ public class LiveRangeSetter implements Pass {
             }
         });
 
-        ArrayList<Object> newCommands = new ArrayList<>();
-        newCommands.add(new Command(Opcode.CAPTURE, useSet.toArray()));
-        newCommands.addAll(Arrays.asList(threadCommands));
-        newCommands.add(new Command(Opcode.DEREF, useSet.toArray()));
-
-        return new Command(Opcode.THREAD, newCommands.toArray());
+        return useSet;
     }
 
-    @Override
-    public Iterable<Command> run(Iterable<Command> commands) {
-        Map<String, Integer> nameToFirstNotUseIdx = new HashMap<>();
-        int currentId = 0;
-        for (Command command : commands) {
-            if (command.getOpcode() == Opcode.DEF_REF
-                    || command.getOpcode() == Opcode.DEF_WREF) {
-                String lhs = first((String) command.getArg(0));
-                String rhs = first((String) command.getArg(1));
-
-                nameToFirstNotUseIdx.put(lhs, currentId + 1);
-
-                if (!"object".equals(rhs)) {
-                    nameToFirstNotUseIdx.put(rhs, currentId + 1);
-                }
-            }
-            ++currentId;
-        }
-
+    private Map<Integer, ArrayList<String>> reversedMap(Map<String, Integer> nameToFirstNotUseIdx) {
         Map<Integer, ArrayList<String>> idxToNames = new HashMap<>();
         nameToFirstNotUseIdx.forEach((name, value) -> {
             int idx = value;
@@ -66,23 +42,68 @@ public class LiveRangeSetter implements Pass {
             }
         });
 
+        return idxToNames;
+    }
+
+    private void handleThreadCommand(Command thread, List<Command> list, Set<String> useSet) {
+        list.add(new Command(Opcode.CAPTURE, useSet.toArray()));
+        Object[] newThreadCommands = new Object[thread.argsSize() + 1];
+        System.arraycopy(thread.getArgs(), 0, newThreadCommands, 0, thread.argsSize());
+        newThreadCommands[thread.argsSize()] = new Command(Opcode.DEREF, useSet.toArray());
+        list.add(new Command(Opcode.THREAD, newThreadCommands));
+    }
+
+    @Override
+    public Iterable<Command> run(Iterable<Command> commands) {
+        Map<String, Integer> nameToFirstNotUseIdx = new HashMap<>();
+        int currentId = 0;
+        List<Set<String>> useSetForThread = new ArrayList<>();
+        for (Command command : commands) {
+            if (command.getOpcode() == Opcode.DEF_REF
+                    || command.getOpcode() == Opcode.DEF_WREF) {
+                String lhs = first((String) command.getArg(0));
+                String rhs = first((String) command.getArg(1));
+
+                if (command.getOpcode() != Opcode.DEF_WREF) {
+                    nameToFirstNotUseIdx.put(lhs, currentId + 1);
+                }
+
+                if (!"object".equals(rhs)) {
+                    nameToFirstNotUseIdx.put(rhs, currentId + 1);
+                }
+            } else if (command.getOpcode() == Opcode.THREAD) {
+                Command[] threadCommands = Arrays.copyOf(command.getArgs(), command.argsSize(), Command[].class);
+                Set<String> useSet = getUseSet(threadCommands);
+                for (String name : useSet) {
+                    nameToFirstNotUseIdx.put(name, currentId + 1);
+                }
+                useSetForThread.add(useSet);
+            }
+            ++currentId;
+        }
+
+        Map<Integer, ArrayList<String>> idxToNames = reversedMap(nameToFirstNotUseIdx);
+
         currentId = 0;
+        int currentThreadId = 0;
         List<Command> list = new ArrayList<>();
         for (Command command : commands) {
-            ArrayList<String> names = idxToNames.get(currentId);
+            List<String> names = idxToNames.get(currentId);
             if (names != null) {
                 list.add(new Command(Opcode.DEREF, names.toArray()));
             }
 
             if (command.getOpcode() == Opcode.THREAD) {
-                command = handleThreadCommand(command);
+                handleThreadCommand(command, list, useSetForThread.get(currentThreadId));
+                ++currentThreadId;
+            } else {
+                list.add(command);
             }
 
-            list.add(command);
             ++currentId;
         }
 
-        ArrayList<String> names = idxToNames.get(currentId);
+        List<String> names = idxToNames.get(currentId);
         if (names != null) {
             list.add(new Command(Opcode.DEREF, names.toArray()));
         }
