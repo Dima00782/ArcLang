@@ -1,6 +1,7 @@
 package com.github.dima00782.parser;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public final class Command {
     private final Opcode opcode;
@@ -36,5 +37,21 @@ public final class Command {
                 "opcode=" + opcode +
                 ", args=" + Arrays.toString(args) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Command command = (Command) o;
+        return opcode == command.opcode &&
+                Arrays.equals(args, command.args);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(opcode);
+        result = 31 * result + Arrays.hashCode(args);
+        return result;
     }
 }
