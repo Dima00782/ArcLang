@@ -74,6 +74,23 @@ public class ArcInterpreterTest {
     }
 
     @Test
+    public void testCaptureDerefNoAffectWeakRef() {
+        ArrayList<Command> commands = new ArrayList<>(Arrays.asList(
+                new Command(Opcode.DEF_REF, new Object[] {"a", "object"}),
+                new Command(Opcode.DEF_WREF, new Object[] {"b", "a"}),
+                new Command(Opcode.CAPTURE, new Object[] {"b"}),
+                new Command(Opcode.THREAD, new Object[] {
+                        new Command(Opcode.DEF_WREF, new Object[] {"c", "b"}),
+                        new Command(Opcode.SLEEP, null),
+                        new Command(Opcode.DEREF, new Object[] {"b"}),
+                }),
+                new Command(Opcode.DUMP, new Object[] {"a"})
+        ));
+
+        assertEquals("ArcObject{refCount=1, fields={}} ", runInterpreter(commands));
+    }
+
+    @Test
     public void testThread() {
         ArrayList<Command> commands = new ArrayList<>(Arrays.asList(
                 new Command(Opcode.THREAD, new Object[] {

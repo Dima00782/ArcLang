@@ -41,7 +41,7 @@ public class ArcInterpreter implements Interpreter {
         if ("object".equals(rhs) && !isWeak) {
             lhs = lhsSearchResult.getKey();
             ArcObject objectToInsert = lhsSearchResult.getValue();
-            objectToInsert.addFiled(lhs, new ArcObject());
+            objectToInsert.addFiled(lhs, new ArcObject(), false);
         } else {
             lhs = lhsSearchResult.getKey();
             ArcObject objectToInsert = lhsSearchResult.getValue();
@@ -54,7 +54,7 @@ public class ArcInterpreter implements Interpreter {
             if (!isWeak) {
                 targetObject.incrementRefCount();
             }
-            objectToInsert.addFiled(lhs, targetObject);
+            objectToInsert.addFiled(lhs, targetObject, isWeak);
         }
     }
 
@@ -74,9 +74,11 @@ public class ArcInterpreter implements Interpreter {
                     LOGGER.info("DEREF " + String.join(",", names));
 
                     IntStream.range(0, command.argsSize()).forEach(i -> {
-                        int refCount = scopeObject.decrement(names[i]);
-                        if (refCount == 0) {
-                            scopeObject.removeField(names[i]);
+                        if (!scopeObject.isWeak(names[i])) {
+                            int refCount = scopeObject.decrement(names[i]);
+                            if (refCount == 0) {
+                                scopeObject.removeField(names[i]);
+                            }
                         }
                     });
                     break;
@@ -84,7 +86,9 @@ public class ArcInterpreter implements Interpreter {
                 case CAPTURE: {
                     String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
                     LOGGER.info("CAPTURE " + String.join(",", names));
-                    IntStream.range(0, command.argsSize()).forEach(i -> scopeObject.getField(names[i]).incrementRefCount());
+                    int bound = command.argsSize();
+                    IntStream.range(0, bound).filter(i -> !scopeObject.isWeak(names[i])).
+                            forEach(i -> scopeObject.getField(names[i]).incrementRefCount());
                     break;
                 }
                 case THREAD: {
