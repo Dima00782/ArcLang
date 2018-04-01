@@ -7,7 +7,7 @@ import java.util.*;
 
 public class LiveRangeSetter implements Pass {
     private String first(String name) {
-        int indexOfComma = name.indexOf(",");
+        int indexOfComma = name.indexOf(".");
         if (indexOfComma == -1) {
             return name;
         }
