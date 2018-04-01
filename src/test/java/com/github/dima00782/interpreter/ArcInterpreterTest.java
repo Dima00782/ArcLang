@@ -14,7 +14,7 @@ public class ArcInterpreterTest {
     private static Interpreter interpreter;
 
     @BeforeClass
-    public static void initParser() {
+    public static void initInterpreter() {
         interpreter = new ArcInterpreter();
     }
 
