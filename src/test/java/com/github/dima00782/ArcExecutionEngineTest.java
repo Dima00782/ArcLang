@@ -35,10 +35,14 @@ public class ArcExecutionEngineTest {
         return sb.toString();
     }
 
+    private CharStream getCharStream(String fileName) throws IOException {
+        URL url = this.getClass().getResource(fileName);
+        return CharStreams.fromStream(new FileInputStream(url.getFile()));
+    }
+
     @Test
     public void testAllCommands() throws IOException {
-        URL url = this.getClass().getResource("/all_commands.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/all_commands.arc");
 
         LOGGER.info("RUN: all_commands.arc");
         assertEquals("ArcObject{refCount=1, fields={}} " +
@@ -51,16 +55,13 @@ public class ArcExecutionEngineTest {
 
     @Test(expected = NullPointerException.class)
     public void testException() throws IOException {
-        URL url = this.getClass().getResource("/raise_exception.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
-
+        CharStream charStream = getCharStream("/raise_exception.arc");
         execute(charStream);
     }
 
     @Test
     public void testThreadCapture() throws IOException {
-        URL url = this.getClass().getResource("/thread_capture.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/thread_capture.arc");
 
         LOGGER.info("RUN: thread_capture.arc");
         assertEquals("ArcObject{refCount=1, fields={}} " +
@@ -72,8 +73,7 @@ public class ArcExecutionEngineTest {
 
     @Test
     public void testConcurentChangeOfScope() throws IOException {
-        URL url = this.getClass().getResource("/concurrent_change_scope.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/concurrent_change_scope.arc");
 
         LOGGER.info("RUN: concurrent_change_scope.arc");
         assertEquals("ArcObject{refCount=2, fields={}} " +
@@ -83,8 +83,7 @@ public class ArcExecutionEngineTest {
 
     @Test(expected = com.github.dima00782.parser.ParserException.class)
     public void testWrefObjectAssignment() throws IOException {
-        URL url = this.getClass().getResource("/wref_object_assignment.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/wref_object_assignment.arc");
 
         LOGGER.info("RUN: wref_object_assignment.arc");
         execute(charStream);
@@ -92,8 +91,7 @@ public class ArcExecutionEngineTest {
 
     @Test
     public void testThreadChain() throws IOException {
-        URL url = this.getClass().getResource("/thread_chain.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/thread_chain.arc");
 
         LOGGER.info("RUN: thread_chain.arc");
         assertEquals("ArcObject{refCount=1, " +
@@ -106,8 +104,7 @@ public class ArcExecutionEngineTest {
 
     @Test
     public void testThreadConcurrent() throws IOException {
-        URL url = this.getClass().getResource("/thread_concurrent_write.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/thread_concurrent_write.arc");
 
         LOGGER.info("RUN: thread_concurrent_write.arc");
         assertEquals("ArcObject{refCount=1, fields={" +
@@ -118,8 +115,7 @@ public class ArcExecutionEngineTest {
 
     @Test
     public void testReturnFromThread() throws IOException {
-        URL url = this.getClass().getResource("/return_from_thread.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/return_from_thread.arc");
 
         LOGGER.info("RUN: return_from_thread.arc");
         assertEquals("ArcObject{refCount=1, fields={x=ArcObject{refCount=1, fields={}}=false}} ",
@@ -128,8 +124,7 @@ public class ArcExecutionEngineTest {
 
     @Test
     public void testAtomicDelete() throws IOException {
-        URL url = this.getClass().getResource("/atomic_delete.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/atomic_delete.arc");
 
         LOGGER.info("RUN: atomic_delete.arc");
         assertEquals("null ",
@@ -138,8 +133,7 @@ public class ArcExecutionEngineTest {
 
     @Test
     public void testEmptyFile() throws IOException {
-        URL url = this.getClass().getResource("/empty.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/empty.arc");
 
         LOGGER.info("RUN: empty.arc");
         assertEquals("", execute(charStream));
@@ -147,8 +141,7 @@ public class ArcExecutionEngineTest {
 
     @Test
     public void testThreadCapture2() throws IOException {
-        URL url = this.getClass().getResource("/thread_capture2.arc");
-        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+        CharStream charStream = getCharStream("/thread_capture2.arc");
 
         LOGGER.info("RUN: thread_capture.arc");
         assertEquals("ArcObject{refCount=1, fields={}} ", execute(charStream));
