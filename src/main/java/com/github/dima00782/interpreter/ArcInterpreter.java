@@ -86,9 +86,9 @@ public class ArcInterpreter implements Interpreter {
                 case CAPTURE: {
                     String[] names = Arrays.copyOf(command.getArgs(), command.argsSize(), String[].class);
                     LOGGER.info("CAPTURE " + String.join(",", names));
-                    int bound = command.argsSize();
-                    IntStream.range(0, bound).filter(i -> !scopeObject.isWeak(names[i])).
-                            forEach(i -> scopeObject.getField(names[i]).incrementRefCount());
+                    IntStream.range(0, command.argsSize()).filter(i -> !scopeObject.isWeak(names[i])).forEach(
+                            i -> scopeObject.getField(names[i]).incrementRefCount()
+                    );
                     break;
                 }
                 case THREAD: {

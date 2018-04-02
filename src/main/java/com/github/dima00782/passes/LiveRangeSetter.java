@@ -18,9 +18,7 @@ public class LiveRangeSetter implements Pass {
         Set<String> useSet = new HashSet<>();
         Arrays.stream(commands).forEach(current -> {
             if (current.getOpcode() == Opcode.DEF_REF) {
-                String lhs = first((String) current.getArg(0));
                 String rhs = first((String) current.getArg(1));
-                useSet.add(lhs);
                 if (!"object".equals(rhs)) {
                     useSet.add(rhs);
                 }
@@ -63,6 +61,7 @@ public class LiveRangeSetter implements Pass {
         int currentId = 0;
         List<Set<String>> useSetForThread = new ArrayList<>();
         for (Command command : commands) {
+            System.out.println(command);
             if (command.getOpcode() == Opcode.DEF_REF
                     || command.getOpcode() == Opcode.DEF_WREF) {
                 String lhs = first((String) command.getArg(0));
@@ -93,7 +92,7 @@ public class LiveRangeSetter implements Pass {
         List<Command> list = new ArrayList<>();
         for (Command command : commands) {
             List<String> names = idxToNames.get(currentId);
-            if (names != null) {
+            if (names != null && !names.isEmpty()) {
                 list.add(new Command(Opcode.DEREF, names.toArray()));
             }
 

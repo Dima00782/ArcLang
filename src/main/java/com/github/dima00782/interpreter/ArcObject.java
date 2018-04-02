@@ -34,7 +34,11 @@ public class ArcObject {
     }
 
     public boolean isWeak(String fieldName) {
-        return fields.get(fieldName).getValue();
+        Pair<ArcObject, Boolean> pair = fields.get(fieldName);
+        if (pair == null) {
+            return true;
+        }
+        return pair.getValue();
     }
 
     public void incrementRefCount() {

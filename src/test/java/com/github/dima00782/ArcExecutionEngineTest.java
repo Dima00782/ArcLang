@@ -76,10 +76,8 @@ public class ArcExecutionEngineTest {
         CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
 
         LOGGER.info("RUN: concurrent_change_scope.arc");
-        assertEquals("ArcObject{refCount=1, fields={}} " +
-                        "ArcObject{refCount=2, fields={}} " +
-                        "ArcObject{refCount=2, fields={}} " +
-                        "ArcObject{refCount=1, fields={}} ",
+        assertEquals("ArcObject{refCount=2, fields={}} " +
+                        "ArcObject{refCount=1, fields={x=ArcObject{refCount=1, fields={}}=false}} ",
                 execute(charStream));
     }
 }
