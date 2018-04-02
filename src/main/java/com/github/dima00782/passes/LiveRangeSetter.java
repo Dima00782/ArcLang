@@ -48,10 +48,14 @@ public class LiveRangeSetter implements Pass {
     }
 
     private void handleThreadCommand(Command thread, List<Command> list, Set<String> useSet) {
-        list.add(new Command(Opcode.CAPTURE, useSet.toArray()));
-        Object[] newThreadCommands = new Object[thread.argsSize() + 1];
+        if (!useSet.isEmpty()) {
+            list.add(new Command(Opcode.CAPTURE, useSet.toArray()));
+        }
+        Object[] newThreadCommands = new Object[useSet.isEmpty() ? thread.argsSize() : thread.argsSize() + 1];
         System.arraycopy(thread.getArgs(), 0, newThreadCommands, 0, thread.argsSize());
-        newThreadCommands[thread.argsSize()] = new Command(Opcode.DEREF, useSet.toArray());
+        if (!useSet.isEmpty()) {
+            newThreadCommands[thread.argsSize()] = new Command(Opcode.DEREF, useSet.toArray());
+        }
         list.add(new Command(Opcode.THREAD, newThreadCommands));
     }
 

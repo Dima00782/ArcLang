@@ -16,6 +16,10 @@ public class ArcObject {
         if (pair == null) {
             return null;
         }
+
+        if (pair.getKey().refCount.get() == 0 && pair.getValue()) {
+            return null;
+        }
         return pair.getKey();
     }
 
@@ -31,6 +35,7 @@ public class ArcObject {
         String[] names = namesSet.toArray(new String[namesSet.size()]);
 
         Arrays.stream(names).forEach(objectToDelete::removeField);
+        objectToDelete.refCount.set(0);
     }
 
     public boolean isWeak(String fieldName) {

@@ -89,4 +89,68 @@ public class ArcExecutionEngineTest {
         LOGGER.info("RUN: wref_object_assignment.arc");
         execute(charStream);
     }
+
+    @Test
+    public void testThreadChain() throws IOException {
+        URL url = this.getClass().getResource("/thread_chain.arc");
+        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+
+        LOGGER.info("RUN: thread_chain.arc");
+        assertEquals("ArcObject{refCount=1, " +
+                        "fields={x=ArcObject{refCount=1, " +
+                        "fields={y=ArcObject{refCount=1, " +
+                        "fields={z=ArcObject{refCount=1, " +
+                        "fields={}}=false}}=false}}=false}} ",
+                execute(charStream));
+    }
+
+    @Test
+    public void testThreadConcurrent() throws IOException {
+        URL url = this.getClass().getResource("/thread_concurrent_write.arc");
+        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+
+        LOGGER.info("RUN: thread_concurrent_write.arc");
+        assertEquals("ArcObject{refCount=1, fields={" +
+                        "x=ArcObject{refCount=1, fields={}}=false, " +
+                        "y=ArcObject{refCount=1, fields={}}=false}} ",
+                execute(charStream));
+    }
+
+    @Test
+    public void testReturnFromThread() throws IOException {
+        URL url = this.getClass().getResource("/return_from_thread.arc");
+        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+
+        LOGGER.info("RUN: return_from_thread.arc");
+        assertEquals("ArcObject{refCount=1, fields={x=ArcObject{refCount=1, fields={}}=false}} ",
+                execute(charStream));
+    }
+
+    @Test
+    public void testAtomicDelete() throws IOException {
+        URL url = this.getClass().getResource("/atomic_delete.arc");
+        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+
+        LOGGER.info("RUN: atomic_delete.arc");
+        assertEquals("null ",
+                execute(charStream));
+    }
+
+    @Test
+    public void testEmptyFile() throws IOException {
+        URL url = this.getClass().getResource("/empty.arc");
+        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+
+        LOGGER.info("RUN: empty.arc");
+        assertEquals("", execute(charStream));
+    }
+
+    @Test
+    public void testThreadCapture2() throws IOException {
+        URL url = this.getClass().getResource("/thread_capture2.arc");
+        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+
+        LOGGER.info("RUN: thread_capture.arc");
+        assertEquals("ArcObject{refCount=1, fields={}} ", execute(charStream));
+    }
 }
