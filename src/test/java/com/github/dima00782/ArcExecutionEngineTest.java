@@ -80,4 +80,13 @@ public class ArcExecutionEngineTest {
                         "ArcObject{refCount=1, fields={x=ArcObject{refCount=1, fields={}}=false}} ",
                 execute(charStream));
     }
+
+    @Test(expected = com.github.dima00782.parser.ParserException.class)
+    public void testWrefObjectAssignment() throws IOException {
+        URL url = this.getClass().getResource("/wref_object_assignment.arc");
+        CharStream charStream = CharStreams.fromStream(new FileInputStream(url.getFile()));
+
+        LOGGER.info("RUN: wref_object_assignment.arc");
+        execute(charStream);
+    }
 }
