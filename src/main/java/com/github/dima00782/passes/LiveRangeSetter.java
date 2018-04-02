@@ -61,7 +61,6 @@ public class LiveRangeSetter implements Pass {
         int currentId = 0;
         List<Set<String>> useSetForThread = new ArrayList<>();
         for (Command command : commands) {
-            System.out.println(command);
             if (command.getOpcode() == Opcode.DEF_REF
                     || command.getOpcode() == Opcode.DEF_WREF) {
                 String lhs = first((String) command.getArg(0));
